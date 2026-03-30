@@ -711,7 +711,7 @@
   }
 
   // ── Inactivity reset (30 min) ────────────────────────────────────────────────
-  const INACTIVITY_MS = 30 * 60 * 1000;
+  const INACTIVITY_MS = 60 * 1000;
   let inactivityTimer = null;
 
   function resetInactivityTimer() {
