@@ -171,11 +171,8 @@
         <div class="status-item"><span class="dot">•</span>FAQ answers (all topics)</div>
         <div class="status-item"><span class="dot">•</span>Unit size recommendations</div>
         <div class="status-item"><span class="dot">•</span>Location comparison + directions</div>
-        <div class="status-item"><span class="dot">•</span>Reservation form (collects info)</div>
-        <div class="status-item"><span class="dot">•</span>Owner email notification</div>
-        <div class="status-item"><span class="dot">•</span>Customer confirmation email</div>
+        <div class="status-item"><span class="dot">•</span>Direct reservation link in chat</div>
         <div class="status-item"><span class="dot">•</span>Google review prompt at end</div>
-        <div class="status-item"><span class="dot">•</span>Admin reservations dashboard</div>
         <div class="status-item"><span class="dot">•</span>Embed code (2 lines)</div>
       </div>
 
@@ -211,12 +208,12 @@
 
   <!-- WHAT TO DO NEXT -->
   <div class="card">
-    <h2>To go live — 3 steps remaining</h2>
+    <h2>To go live — 2 steps remaining</h2>
     <div class="setup-step">
       <div class="setup-num">1</div>
       <div>
         <b>Get your Anthropic API key</b>
-        <p>Go to <b>console.anthropic.com</b>, create an account, and generate an API key. Share it so it can be added to the server. This replaces the temporary key currently in use.</p>
+        <p>Go to <b>console.anthropic.com</b>, create an account, and generate an API key. Share it so it can be added to the server. This replaces the temporary key currently in use. Estimated cost: $5–20/month depending on chat volume.</p>
       </div>
     </div>
     <div class="setup-step">
@@ -224,13 +221,6 @@
       <div>
         <b>Get Storable API permissions</b>
         <p>Contact Storable support and say: <em>"I need API read access for units/availability and write access for leads at my facility."</em> The credentials are already set up — just waiting on their approval.</p>
-      </div>
-    </div>
-    <div class="setup-step">
-      <div class="setup-num">3</div>
-      <div>
-        <b>Add the Google Review link</b>
-        <p>At the end of every chat, Stori prompts the customer to leave a Google review. Provide your Google Business review link so it can be added. (Find it in Google Business Profile → Get more reviews.)</p>
       </div>
     </div>
   </div>
@@ -270,19 +260,12 @@
       <div class="flow-step">
         <div class="step-num">5</div>
         <div class="step-body">
-          <b>Customer reserves online</b>
-          <p>Stori collects their name, email, and move-in date — one question at a time. A confirmation card appears in chat with a button to complete the rental on lookselfstorage.com.</p>
+          <b>Stori sends them directly to checkout</b>
+          <p>Once the customer is ready to reserve, Stori gives them a direct link in the chat to complete their rental on lookselfstorage.com — they pay, sign their lease, and move in all in one place. Same-day move-in is available.</p>
         </div>
       </div>
       <div class="flow-step">
         <div class="step-num">6</div>
-        <div class="step-body">
-          <b>Two emails sent automatically</b>
-          <p>Owner receives a notification with customer details. Customer receives a confirmation with a link to pay, sign their lease, and move in — same-day move-in is available.</p>
-        </div>
-      </div>
-      <div class="flow-step">
-        <div class="step-num">7</div>
         <div class="step-body">
           <b>Google review prompt</b>
           <p>At the end of the conversation, Stori thanks the customer and shows a clickable link to leave a Google review — no star ratings, no in-app surveys.</p>
@@ -303,24 +286,10 @@
         </div>
       </li>
       <li>
-        <div class="icon">📋</div>
+        <div class="icon">🔗</div>
         <div>
-          <b>Reservations saved as Storable leads <span class="pill pill-orange">Storable pending</span></b>
-          Every completed reservation is posted to Storable as a lead and backed up locally.
-        </div>
-      </li>
-      <li>
-        <div class="icon">📧</div>
-        <div>
-          <b>Owner notification email <span class="pill pill-green">Live</span></b>
-          You receive an email the moment a customer reserves — name, unit size, location, move-in date.
-        </div>
-      </li>
-      <li>
-        <div class="icon">✅</div>
-        <div>
-          <b>Customer confirmation email <span class="pill pill-green">Live</span></b>
-          Customer gets a link to complete their rental through ClickandStor — pay, sign lease, move in same day.
+          <b>Direct reservation link in chat <span class="pill pill-green">Live</span></b>
+          When a customer is ready to reserve, Stori gives them a direct link to lookselfstorage.com to complete their rental — pay, sign lease, and move in all in one place.
         </div>
       </li>
       <li>
@@ -550,13 +519,6 @@
       </div>
 
     </div>
-  </div>
-
-  <!-- RESERVATIONS ADMIN -->
-  <div class="card">
-    <h2>View reservations</h2>
-    <p style="font-size:14px;color:#555;margin-bottom:10px">All reservations are saved locally and accessible here (replace <b>YOUR-KEY</b> with your admin password):</p>
-    <a class="admin-link" href="/admin/reservations?key=changeme-before-deploy" target="_blank">/admin/reservations?key=YOUR-KEY</a>
   </div>
 
   <!-- EMBED -->
