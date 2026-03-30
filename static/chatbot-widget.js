@@ -584,7 +584,7 @@
   // ── Quick reply chip renderer ────────────────────────────────────────────────
   const OPEN_ENDED_CHIPS   = /^(something else|other)$/i;
   const SEE_WHAT_FITS_CHIP = /^see what fits/i;
-  const GOOGLE_REVIEW_CHIP = /^leave a google review$/i;
+  const GOOGLE_REVIEW_CHIP = /^google review$/i;
   const GOOGLE_REVIEW_URL  = "https://search.google.com/local/writereview?placeid=ChIJV4YgHEBfI4gRoATFFK2mfoU";
 
   function showChips(options, onSelect) {
