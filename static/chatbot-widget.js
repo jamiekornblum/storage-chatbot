@@ -709,8 +709,18 @@
     messagesEl.scrollTop = messagesEl.scrollHeight;
   }
 
+  // ── Inactivity reset (30 min) ────────────────────────────────────────────────
+  const INACTIVITY_MS = 30 * 60 * 1000;
+  let inactivityTimer = null;
+
+  function resetInactivityTimer() {
+    clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(() => resetChat(), INACTIVITY_MS);
+  }
+
   // ── Reset ────────────────────────────────────────────────────────────────────
   function resetChat() {
+    clearTimeout(inactivityTimer);
     history    = [];
     displayLog = [];
     busy       = false;
@@ -738,6 +748,7 @@
   // ── Send message ─────────────────────────────────────────────────────────────
   async function sendMessage(text) {
     if (!text.trim() || busy) return;
+    resetInactivityTimer();
 
     if (RESET_PATTERN.test(text)) {
       resetChat();
@@ -891,6 +902,7 @@
     if (messagesEl.children.length === 0) {
       const isReturning = restoreSession();
       injectSessionContext(isReturning);
+      resetInactivityTimer();
       if (!isReturning) {
         showGreeting();
       } else {
