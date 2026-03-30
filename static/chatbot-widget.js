@@ -584,7 +584,7 @@
   // ── Quick reply chip renderer ────────────────────────────────────────────────
   const OPEN_ENDED_CHIPS   = /^(something else|other)$/i;
   const SEE_WHAT_FITS_CHIP = /^see what fits/i;
-  const ALL_GOOD_CHIP      = /^all good$/i;
+  const GOOGLE_REVIEW_CHIP = /^leave a google review$/i;
   const GOOGLE_REVIEW_URL  = "https://search.google.com/local/writereview?placeid=ChIJV4YgHEBfI4gRoATFFK2mfoU";
 
   function showChips(options, onSelect) {
@@ -602,11 +602,12 @@
           input.focus();
         } else if (SEE_WHAT_FITS_CHIP.test(label)) {
           if (currentRecommendedSize) renderSizeVisualization(currentRecommendedSize);
-        } else if (ALL_GOOD_CHIP.test(label)) {
+        } else if (GOOGLE_REVIEW_CHIP.test(label)) {
           addBubble("user", label);
+          window.open(GOOGLE_REVIEW_URL, "_blank", "noopener,noreferrer");
           setTimeout(() => {
-            addBubble("bot", `Glad I could help! If you have a moment, we'd love a Google review — it means a lot to us. [Leave a review ⭐](${GOOGLE_REVIEW_URL})`);
-            setTimeout(() => resetChat(), 8000);
+            addBubble("bot", "Thanks so much — it really means a lot to us! 😊 Have a great day!");
+            setTimeout(() => resetChat(), 4000);
           }, 400);
         } else {
           onSelect(label);
