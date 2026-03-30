@@ -1,0 +1,7 @@
+anthropic
+flask
+flask-cors
+apscheduler
+requests
+requests-oauthlib
+python-dotenv

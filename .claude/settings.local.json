@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip install:*)",
+      "Bash(curl --version)",
+      "WebSearch",
+      "WebFetch(domain:api.storedgefms.com)",
+      "WebFetch(domain:help.storedge.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:tray.ai)",
+      "Bash(echo \"STORABLE_API_SECRET=$STORABLE_API_SECRET\")",
+      "Bash(echo \"STORABLE_API_KEY=$STORABLE_API_KEY\")",
+      "Bash(python3 -c \":*)",
+      "Bash(pip3 install:*)"
+    ]
+  }
+}

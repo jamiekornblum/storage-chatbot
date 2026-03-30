@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Look Self Storage – Chatbot Demo</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f4f4f4; color: #333;
+    }
+    header {
+      background: #e87722; color: #fff;
+      padding: 20px 40px; font-size: 22px; font-weight: 700;
+    }
+    main { max-width: 760px; margin: 48px auto; padding: 0 24px 80px; }
+    h1 { font-size: 28px; margin-bottom: 12px; }
+    h2 { font-size: 16px; font-weight: 700; margin: 32px 0 10px; color: #333; }
+    p  { font-size: 14px; color: #555; line-height: 1.65; margin-bottom: 8px; }
+
+    .card {
+      background: #fff; border-radius: 10px;
+      padding: 20px 24px; margin-bottom: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    }
+    .card h2 { margin-top: 0; }
+
+    .badge {
+      display: inline-block; background: #e87722; color: #fff;
+      font-size: 11px; font-weight: 700; padding: 2px 8px;
+      border-radius: 20px; margin-right: 5px; vertical-align: middle;
+      letter-spacing: .3px;
+    }
+
+    code {
+      display: block; background: #1e1e1e; color: #d4d4d4;
+      padding: 14px 18px; border-radius: 8px; font-size: 12.5px;
+      margin: 8px 0 16px; white-space: pre-wrap; word-break: break-all;
+      line-height: 1.6;
+    }
+    code .cm { color: #6a9955; }   /* green comment */
+    code .kw { color: #569cd6; }   /* blue keyword  */
+
+    .env-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .env-table th {
+      text-align: left; padding: 6px 10px;
+      background: #f0f0f0; font-weight: 600; color: #444;
+    }
+    .env-table td { padding: 7px 10px; border-top: 1px solid #eee; }
+    .env-table td:first-child { font-family: monospace; color: #c7254e; white-space: nowrap; }
+    .env-table .req { color: #e87722; font-weight: 700; font-size: 11px; }
+
+    .warn {
+      background: #fff8e1; border-left: 4px solid #f0ad00;
+      padding: 12px 16px; border-radius: 4px; margin: 16px 0;
+      font-size: 13px; color: #555; line-height: 1.6;
+    }
+
+    ul { padding-left: 20px; }
+    li { font-size: 14px; color: #555; line-height: 1.85; }
+    li b { color: #333; }
+  </style>
+</head>
+<body>
+  <header>Look Self Storage — Chatbot Demo</header>
+  <main>
+    <h1>Your AI Chatbot is Running!</h1>
+    <p>Click the orange button in the bottom-right corner to try it out.</p>
+
+    <div class="warn">
+      <b>Before going live:</b> open <b>app.py</b> and fill in your real phone number, address, hours, and unit prices in the <b>BUSINESS_INFO</b> and <b>UNITS</b> sections at the top.
+    </div>
+
+    <!-- Features -->
+    <div class="card">
+      <h2>What the chatbot can do</h2>
+      <ul>
+        <li><span class="badge">Live</span> <b>Answer common questions</b> — hours, features, policies, directions</li>
+        <li><span class="badge">Live</span> <b>Guide customers to the right unit</b> — asks what they're storing and recommends a size</li>
+        <li><span class="badge">Live</span> <b>Show availability &amp; pricing</b> — reads from the <code style="display:inline;background:none;padding:0;font-size:inherit;color:#c7254e">UNITS</code> dict in app.py in real time</li>
+        <li><span class="badge">Live</span> <b>Complete reservations</b> — collects name, email, unit size, move-in date; saves to SQLite DB; sends confirmation emails</li>
+        <li><span class="badge">Live</span> <b>Automatic follow-up</b> — emails customers 24 h after inquiry if staff haven't reached out yet</li>
+      </ul>
+    </div>
+
+    <!-- Embed snippet -->
+    <div class="card">
+      <h2>Embed on your website</h2>
+      <p>Paste this before <b>&lt;/body&gt;</b> on every page you want the chat on:</p>
+      <code>&lt;script
+  src="https://YOUR-BACKEND-URL/static/chatbot-widget.js"
+  data-api-url="https://YOUR-BACKEND-URL/chat"
+  data-title="Look Self Storage"
+  data-color="#cc0000"
+  data-header-color="#2a2a2a"
+&gt;&lt;/script&gt;</code>
+      <p>Replace <b>YOUR-BACKEND-URL</b> with the URL where you deploy this server (Render, Railway, Heroku, etc.).</p>
+    </div>
+
+    <!-- Environment variables -->
+    <div class="card">
+      <h2>Environment variables</h2>
+      <p>Set these before starting the server:</p>
+      <table class="env-table">
+        <tr>
+          <th>Variable</th>
+          <th>Description</th>
+          <th></th>
+        </tr>
+        <tr><td>ANTHROPIC_API_KEY</td><td>Your Anthropic API key</td><td class="req">required</td></tr>
+        <tr><td>NOTIFY_EMAIL</td><td>Email address to receive new reservation alerts</td><td class="req">recommended</td></tr>
+        <tr><td>SMTP_HOST</td><td>SMTP server hostname (e.g. smtp.gmail.com)</td><td></td></tr>
+        <tr><td>SMTP_PORT</td><td>SMTP port — default 587</td><td></td></tr>
+        <tr><td>SMTP_USER</td><td>SMTP login / sender address</td><td></td></tr>
+        <tr><td>SMTP_PASS</td><td>SMTP password or app password</td><td></td></tr>
+        <tr><td>ADMIN_KEY</td><td>Password to access /admin/reservations</td><td></td></tr>
+        <tr><td>DB_PATH</td><td>SQLite file path — default reservations.db</td><td></td></tr>
+        <tr><td>PORT</td><td>HTTP port — default 5000</td><td></td></tr>
+      </table>
+    </div>
+
+    <!-- Admin -->
+    <div class="card">
+      <h2>View reservations</h2>
+      <p>All reservation leads are saved to <b>reservations.db</b>. You can view them as JSON at:</p>
+      <code>GET /admin/reservations?key=YOUR-ADMIN-KEY</code>
+      <p>Or open the <b>.db</b> file in any SQLite viewer (e.g. <a href="https://sqlitebrowser.org" target="_blank">DB Browser for SQLite</a> — free).</p>
+    </div>
+
+    <!-- Run -->
+    <div class="card">
+      <h2>Start the server</h2>
+      <code>pip install -r requirements.txt
+ANTHROPIC_API_KEY=sk-ant-... python app.py</code>
+    </div>
+  </main>
+
+  <script
+    src="/static/chatbot-widget.js"
+    data-api-url="/chat"
+    data-title="Look Self Storage"
+    data-color="#cc0000"
+    data-header-color="#2a2a2a"
+  ></script>
+</body>
+</html>
