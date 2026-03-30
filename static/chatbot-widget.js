@@ -229,7 +229,7 @@
       border-radius: 20px; padding: 8px 10px; font-size: 12.5px;
       cursor: pointer; font-family: inherit; font-weight: 500;
       transition: background .15s, color .15s, transform .1s;
-      text-align: center; line-height: 1.3;
+      text-align: center; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .ls-quick-reply:hover { background: ${ACCENT}; color: #fff; transform: translateY(-1px); }
     /* Last chip alone gets full width if odd count */
@@ -584,7 +584,7 @@
   // ── Quick reply chip renderer ────────────────────────────────────────────────
   const OPEN_ENDED_CHIPS   = /^(something else|other)$/i;
   const SEE_WHAT_FITS_CHIP = /^see what fits/i;
-  const GOOGLE_REVIEW_CHIP = /^google review$/i;
+  const GOOGLE_REVIEW_CHIP = /^please leave a google review$/i;
   const GOOGLE_REVIEW_URL  = "https://search.google.com/local/writereview?placeid=ChIJV4YgHEBfI4gRoATFFK2mfoU";
 
   function showChips(options, onSelect) {
