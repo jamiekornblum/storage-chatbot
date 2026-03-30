@@ -607,7 +607,7 @@
           window.open(GOOGLE_REVIEW_URL, "_blank", "noopener,noreferrer");
           setTimeout(() => {
             addBubble("bot", "Thanks so much — it really means a lot to us! 😊 Have a great day!");
-            setTimeout(() => resetChat(), 4000);
+            setTimeout(() => resetChat(), 60000);
           }, 400);
         } else {
           onSelect(label);
@@ -711,7 +711,7 @@
   }
 
   // ── Inactivity reset (30 min) ────────────────────────────────────────────────
-  const INACTIVITY_MS = 60 * 1000;
+  const INACTIVITY_MS = 30 * 60 * 1000;
   let inactivityTimer = null;
 
   function resetInactivityTimer() {
