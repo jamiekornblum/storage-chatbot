@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Look Self Storage – Chatbot Demo</title>
+  <title>Look Self Storage – Stori Demo</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -11,137 +11,565 @@
       background: #f4f4f4; color: #333;
     }
     header {
-      background: #e87722; color: #fff;
-      padding: 20px 40px; font-size: 22px; font-weight: 700;
+      background: #cc0000; color: #fff;
+      padding: 20px 40px;
+      display: flex; align-items: center; gap: 14px;
     }
-    main { max-width: 760px; margin: 48px auto; padding: 0 24px 80px; }
-    h1 { font-size: 28px; margin-bottom: 12px; }
-    h2 { font-size: 16px; font-weight: 700; margin: 32px 0 10px; color: #333; }
-    p  { font-size: 14px; color: #555; line-height: 1.65; margin-bottom: 8px; }
+    header span { font-size: 22px; font-weight: 700; }
+    header small { font-size: 13px; font-weight: 400; opacity: .8; }
+    main { max-width: 820px; margin: 40px auto; padding: 0 24px 120px; }
+    h1 { font-size: 26px; margin-bottom: 8px; }
+    .subtitle { font-size: 15px; color: #666; margin-bottom: 32px; line-height: 1.6; }
 
     .card {
       background: #fff; border-radius: 10px;
-      padding: 20px 24px; margin-bottom: 16px;
+      padding: 22px 26px; margin-bottom: 16px;
       box-shadow: 0 1px 4px rgba(0,0,0,.08);
     }
-    .card h2 { margin-top: 0; }
+    .card h2 { font-size: 15px; font-weight: 700; margin-bottom: 14px; color: #111; }
+    .card h3 { font-size: 13px; font-weight: 700; color: #555; text-transform: uppercase;
+      letter-spacing: .5px; margin: 18px 0 10px; }
+    .card h3:first-of-type { margin-top: 0; }
 
-    .badge {
-      display: inline-block; background: #e87722; color: #fff;
-      font-size: 11px; font-weight: 700; padding: 2px 8px;
-      border-radius: 20px; margin-right: 5px; vertical-align: middle;
-      letter-spacing: .3px;
+    /* ── Status grid ── */
+    .status-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    @media(max-width:640px) { .status-grid { grid-template-columns: 1fr; } }
+    .status-col { border-radius: 8px; padding: 14px 16px; }
+    .status-col.green  { background: #e9f7ee; border: 1.5px solid #a8d5b5; }
+    .status-col.orange { background: #fff8e1; border: 1.5px solid #f0c040; }
+    .status-col.blue   { background: #e8f1ff; border: 1.5px solid #9ab8f0; }
+    .status-col-title {
+      font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px;
+      margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
     }
+    .status-col.green  .status-col-title { color: #2e7d32; }
+    .status-col.orange .status-col-title { color: #b45309; }
+    .status-col.blue   .status-col-title { color: #1565c0; }
+    .status-item {
+      font-size: 13px; color: #444; padding: 4px 0;
+      display: flex; align-items: flex-start; gap: 7px; line-height: 1.4;
+    }
+    .status-item .dot { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
 
+    /* ── Flow ── */
+    .flow { display: flex; flex-direction: column; gap: 0; }
+    .flow-step { display: flex; align-items: flex-start; gap: 14px; padding: 12px 0; position: relative; }
+    .flow-step:not(:last-child)::after {
+      content: ''; position: absolute; left: 16px; top: 44px;
+      width: 2px; height: calc(100% - 20px); background: #eee;
+    }
+    .step-num {
+      min-width: 32px; height: 32px; border-radius: 50%;
+      background: #cc0000; color: #fff;
+      font-size: 13px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .step-body { padding-top: 5px; }
+    .step-body b { font-size: 14px; color: #111; display: block; margin-bottom: 3px; }
+    .step-body p { font-size: 13px; color: #666; line-height: 1.55; }
+
+    /* ── Feature list ── */
+    .feature-list { list-style: none; padding: 0; }
+    .feature-list li {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid #f0f0f0;
+      font-size: 14px; color: #444; line-height: 1.5;
+    }
+    .feature-list li:last-child { border-bottom: none; }
+    .icon { font-size: 18px; min-width: 28px; text-align: center; margin-top: 1px; }
+    .feature-list b { color: #111; display: block; margin-bottom: 2px; }
+
+    /* ── FAQ ── */
+    .faq-section { margin-top: 6px; }
+    .faq-group { margin-bottom: 20px; }
+    .faq-group-title {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .5px; color: #999; margin-bottom: 10px;
+    }
+    details { border-bottom: 1px solid #f0f0f0; }
+    details:last-child { border-bottom: none; }
+    summary {
+      font-size: 14px; color: #222; font-weight: 500;
+      padding: 10px 0; cursor: pointer; list-style: none;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; color: #aaa; font-size: 18px; font-weight: 400; flex-shrink: 0; margin-left: 12px; }
+    details[open] summary::after { content: "−"; }
+    details p { font-size: 13.5px; color: #555; line-height: 1.65; padding: 0 0 12px; }
+
+    /* ── Pills ── */
+    .pill {
+      display: inline-block; font-size: 11px; font-weight: 700;
+      padding: 2px 8px; border-radius: 20px; margin-left: 6px;
+      vertical-align: middle; letter-spacing: .3px;
+    }
+    .pill-green  { background: #e6f4ea; color: #2e7d32; }
+    .pill-orange { background: #fff3e0; color: #e65100; }
+    .pill-blue   { background: #e3f0ff; color: #1565c0; }
+
+    /* ── Embed box ── */
+    .embed-box {
+      background: #1e1e1e; color: #d4d4d4;
+      padding: 16px 20px; border-radius: 8px;
+      font-family: monospace; font-size: 13px;
+      line-height: 1.7; margin-top: 12px; white-space: pre-wrap;
+    }
+    .embed-box .cm { color: #6a9955; }
+    .embed-box .hl { color: #ce9178; }
+
+    /* ── Admin links ── */
+    .admin-link {
+      display: inline-block; margin-top: 10px;
+      background: #f5f5f5; border: 1px solid #ddd;
+      padding: 8px 14px; border-radius: 6px;
+      font-family: monospace; font-size: 13px; color: #555;
+      text-decoration: none;
+    }
+    .admin-link:hover { background: #eee; }
+
+    /* ── Setup steps ── */
+    .setup-step {
+      display: flex; gap: 14px; padding: 12px 0;
+      border-bottom: 1px solid #f5f5f5; font-size: 14px; color: #444;
+    }
+    .setup-step:last-child { border-bottom: none; }
+    .setup-num {
+      min-width: 26px; height: 26px; border-radius: 50%;
+      background: #1565c0; color: #fff; font-size: 12px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+    }
+    .setup-step b { color: #111; display: block; margin-bottom: 3px; }
+    .setup-step p { font-size: 13px; color: #666; line-height: 1.5; margin: 0; }
     code {
-      display: block; background: #1e1e1e; color: #d4d4d4;
-      padding: 14px 18px; border-radius: 8px; font-size: 12.5px;
-      margin: 8px 0 16px; white-space: pre-wrap; word-break: break-all;
-      line-height: 1.6;
+      background: #f0f0f0; padding: 1px 6px; border-radius: 4px;
+      font-family: monospace; font-size: 12px; color: #c0392b;
     }
-    code .cm { color: #6a9955; }   /* green comment */
-    code .kw { color: #569cd6; }   /* blue keyword  */
-
-    .env-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .env-table th {
-      text-align: left; padding: 6px 10px;
-      background: #f0f0f0; font-weight: 600; color: #444;
-    }
-    .env-table td { padding: 7px 10px; border-top: 1px solid #eee; }
-    .env-table td:first-child { font-family: monospace; color: #c7254e; white-space: nowrap; }
-    .env-table .req { color: #e87722; font-weight: 700; font-size: 11px; }
-
-    .warn {
-      background: #fff8e1; border-left: 4px solid #f0ad00;
-      padding: 12px 16px; border-radius: 4px; margin: 16px 0;
-      font-size: 13px; color: #555; line-height: 1.6;
-    }
-
-    ul { padding-left: 20px; }
-    li { font-size: 14px; color: #555; line-height: 1.85; }
-    li b { color: #333; }
   </style>
 </head>
 <body>
-  <header>Look Self Storage — Chatbot Demo</header>
-  <main>
-    <h1>Your AI Chatbot is Running!</h1>
-    <p>Click the orange button in the bottom-right corner to try it out.</p>
 
-    <div class="warn">
-      <b>Before going live:</b> open <b>app.py</b> and fill in your real phone number, address, hours, and unit prices in the <b>BUSINESS_INFO</b> and <b>UNITS</b> sections at the top.
+<header>
+  <div>
+    <span>Stori — Look Self Storage</span><br>
+    <small>AI Chat Assistant Demo &nbsp;·&nbsp; Click the red button to try it</small>
+  </div>
+</header>
+
+<main>
+  <h1>Here's exactly where things stand.</h1>
+  <p class="subtitle">Everything is built. Two items are still needed before going live — see the status below.</p>
+
+  <!-- STATUS DASHBOARD -->
+  <div class="card">
+    <h2>Current status</h2>
+    <div class="status-grid">
+
+      <div class="status-col green">
+        <div class="status-col-title">✅ Ready now</div>
+        <div class="status-item"><span class="dot">•</span>Chat widget — fully working</div>
+        <div class="status-item"><span class="dot">•</span>FAQ answers (all topics)</div>
+        <div class="status-item"><span class="dot">•</span>Unit size recommendations</div>
+        <div class="status-item"><span class="dot">•</span>Location comparison + directions</div>
+        <div class="status-item"><span class="dot">•</span>Reservation form (collects info)</div>
+        <div class="status-item"><span class="dot">•</span>Owner email notification</div>
+        <div class="status-item"><span class="dot">•</span>Customer confirmation email</div>
+        <div class="status-item"><span class="dot">•</span>Google review prompt at end</div>
+        <div class="status-item"><span class="dot">•</span>Admin reservations dashboard</div>
+        <div class="status-item"><span class="dot">•</span>Embed code (2 lines)</div>
+      </div>
+
+      <div class="status-col orange">
+        <div class="status-col-title">⏳ Waiting on Storable</div>
+        <div class="status-item"><span class="dot">•</span>Live unit availability</div>
+        <div class="status-item"><span class="dot">•</span>Real-time pricing</div>
+        <div class="status-item"><span class="dot">•</span>Leads saved directly in Storable</div>
+        <div style="margin-top:10px;font-size:12px;color:#b45309;line-height:1.5">
+          API credentials are connected. Storable needs to grant permissions — contact Storable support and request read access for units/availability and write access for leads.
+        </div>
+        <div style="margin-top:8px;font-size:12px;color:#b45309;line-height:1.5">
+          Until then, the bot uses the hardcoded inventory already set up.
+        </div>
+      </div>
+
+      <div class="status-col blue">
+        <div class="status-col-title">🔑 Client needs to provide</div>
+        <div class="status-item"><span class="dot">•</span>Anthropic API key</div>
+        <div style="margin-top:10px;font-size:12px;color:#1565c0;line-height:1.5">
+          The chatbot runs on Claude AI (by Anthropic). The client needs their own API key so <b>they</b> pay for usage — not you.
+        </div>
+        <div style="margin-top:8px;font-size:12px;color:#1565c0;line-height:1.5">
+          Sign up at <b>console.anthropic.com</b> → API Keys → Create key. Share the key with you to add to the server.
+        </div>
+        <div style="margin-top:8px;font-size:12px;color:#1565c0;line-height:1.5">
+          Estimated cost: $5–20/month depending on chat volume.
+        </div>
+      </div>
+
     </div>
+  </div>
 
-    <!-- Features -->
-    <div class="card">
-      <h2>What the chatbot can do</h2>
-      <ul>
-        <li><span class="badge">Live</span> <b>Answer common questions</b> — hours, features, policies, directions</li>
-        <li><span class="badge">Live</span> <b>Guide customers to the right unit</b> — asks what they're storing and recommends a size</li>
-        <li><span class="badge">Live</span> <b>Show availability &amp; pricing</b> — reads from the <code style="display:inline;background:none;padding:0;font-size:inherit;color:#c7254e">UNITS</code> dict in app.py in real time</li>
-        <li><span class="badge">Live</span> <b>Complete reservations</b> — collects name, email, unit size, move-in date; saves to SQLite DB; sends confirmation emails</li>
-        <li><span class="badge">Live</span> <b>Automatic follow-up</b> — emails customers 24 h after inquiry if staff haven't reached out yet</li>
-      </ul>
+  <!-- WHAT TO DO NEXT -->
+  <div class="card">
+    <h2>To go live — 3 steps remaining</h2>
+    <div class="setup-step">
+      <div class="setup-num">1</div>
+      <div>
+        <b>Get your Anthropic API key</b>
+        <p>Go to <b>console.anthropic.com</b>, create an account, and generate an API key. Share it so it can be added to the server. This replaces the temporary key currently in use.</p>
+      </div>
     </div>
-
-    <!-- Embed snippet -->
-    <div class="card">
-      <h2>Embed on your website</h2>
-      <p>Paste this before <b>&lt;/body&gt;</b> on every page you want the chat on:</p>
-      <code>&lt;script
-  src="https://YOUR-BACKEND-URL/static/chatbot-widget.js"
-  data-api-url="https://YOUR-BACKEND-URL/chat"
-  data-title="Look Self Storage"
-  data-color="#cc0000"
-  data-header-color="#2a2a2a"
-&gt;&lt;/script&gt;</code>
-      <p>Replace <b>YOUR-BACKEND-URL</b> with the URL where you deploy this server (Render, Railway, Heroku, etc.).</p>
+    <div class="setup-step">
+      <div class="setup-num">2</div>
+      <div>
+        <b>Get Storable API permissions</b>
+        <p>Contact Storable support and say: <em>"I need API read access for units/availability and write access for leads at my facility."</em> The credentials are already set up — just waiting on their approval.</p>
+      </div>
     </div>
-
-    <!-- Environment variables -->
-    <div class="card">
-      <h2>Environment variables</h2>
-      <p>Set these before starting the server:</p>
-      <table class="env-table">
-        <tr>
-          <th>Variable</th>
-          <th>Description</th>
-          <th></th>
-        </tr>
-        <tr><td>ANTHROPIC_API_KEY</td><td>Your Anthropic API key</td><td class="req">required</td></tr>
-        <tr><td>NOTIFY_EMAIL</td><td>Email address to receive new reservation alerts</td><td class="req">recommended</td></tr>
-        <tr><td>SMTP_HOST</td><td>SMTP server hostname (e.g. smtp.gmail.com)</td><td></td></tr>
-        <tr><td>SMTP_PORT</td><td>SMTP port — default 587</td><td></td></tr>
-        <tr><td>SMTP_USER</td><td>SMTP login / sender address</td><td></td></tr>
-        <tr><td>SMTP_PASS</td><td>SMTP password or app password</td><td></td></tr>
-        <tr><td>ADMIN_KEY</td><td>Password to access /admin/reservations</td><td></td></tr>
-        <tr><td>DB_PATH</td><td>SQLite file path — default reservations.db</td><td></td></tr>
-        <tr><td>PORT</td><td>HTTP port — default 5000</td><td></td></tr>
-      </table>
+    <div class="setup-step">
+      <div class="setup-num">3</div>
+      <div>
+        <b>Add the Google Review link</b>
+        <p>At the end of every chat, Stori prompts the customer to leave a Google review. Provide your Google Business review link so it can be added. (Find it in Google Business Profile → Get more reviews.)</p>
+      </div>
     </div>
+  </div>
 
-    <!-- Admin -->
-    <div class="card">
-      <h2>View reservations</h2>
-      <p>All reservation leads are saved to <b>reservations.db</b>. You can view them as JSON at:</p>
-      <code>GET /admin/reservations?key=YOUR-ADMIN-KEY</code>
-      <p>Or open the <b>.db</b> file in any SQLite viewer (e.g. <a href="https://sqlitebrowser.org" target="_blank">DB Browser for SQLite</a> — free).</p>
+  <!-- CONVERSATION FLOW -->
+  <div class="card">
+    <h2>How a conversation works</h2>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <b>Customer opens the chat</b>
+          <p>Stori greets them and offers quick-reply buttons for the most common topics: renting, pricing, hours, vehicle storage, billing, and more.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <b>Stori figures out what they need</b>
+          <p>Asks what they're storing — furniture, appliances, a vehicle — and recommends the right unit size with a visual. One question at a time, no forms.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <b>Customer picks a location</b>
+          <p>If unsure, Stori shows a comparison card with highlights and driving distance from the customer's current location.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <b>Stori shows available units &amp; pricing <span class="pill pill-orange">Storable pending</span></b>
+          <p>Live from Storable once permissions are active. For now, uses the inventory already configured. Shows unit type, price, and active promotions.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <b>Customer reserves online</b>
+          <p>Stori collects their name, email, and move-in date — one question at a time. A confirmation card appears in chat with a button to complete the rental on lookselfstorage.com.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <b>Two emails sent automatically</b>
+          <p>Owner receives a notification with customer details. Customer receives a confirmation with a link to pay, sign their lease, and move in — same-day move-in is available.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">7</div>
+        <div class="step-body">
+          <b>Google review prompt</b>
+          <p>At the end of the conversation, Stori thanks the customer and shows a clickable link to leave a Google review — no star ratings, no in-app surveys.</p>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Run -->
-    <div class="card">
-      <h2>Start the server</h2>
-      <code>pip install -r requirements.txt
-ANTHROPIC_API_KEY=sk-ant-... python app.py</code>
+  <!-- WHAT STORI HANDLES -->
+  <div class="card">
+    <h2>What Stori handles automatically</h2>
+    <ul class="feature-list">
+      <li>
+        <div class="icon">💬</div>
+        <div>
+          <b>Full FAQ knowledge base</b>
+          Stori knows every question on this page — sizes, policies, billing, security, move-out, and more. Customers get instant answers without calling.
+        </div>
+      </li>
+      <li>
+        <div class="icon">📋</div>
+        <div>
+          <b>Reservations saved as Storable leads <span class="pill pill-orange">Storable pending</span></b>
+          Every completed reservation is posted to Storable as a lead and backed up locally.
+        </div>
+      </li>
+      <li>
+        <div class="icon">📧</div>
+        <div>
+          <b>Owner notification email <span class="pill pill-green">Live</span></b>
+          You receive an email the moment a customer reserves — name, unit size, location, move-in date.
+        </div>
+      </li>
+      <li>
+        <div class="icon">✅</div>
+        <div>
+          <b>Customer confirmation email <span class="pill pill-green">Live</span></b>
+          Customer gets a link to complete their rental through ClickandStor — pay, sign lease, move in same day.
+        </div>
+      </li>
+      <li>
+        <div class="icon">⭐</div>
+        <div>
+          <b>Google review prompt <span class="pill pill-green">Live</span></b>
+          After every completed conversation, Stori shows a clickable link to your Google Business review page.
+        </div>
+      </li>
+      <li>
+        <div class="icon">📍</div>
+        <div>
+          <b>Location comparison with distances</b>
+          If a customer isn't sure which location to pick, Stori detects their location and shows driving distance to each facility.
+        </div>
+      </li>
+      <li>
+        <div class="icon">📦</div>
+        <div>
+          <b>Size visualizer</b>
+          Shows a visual of how much fits in each unit size — helps customers choose confidently.
+        </div>
+      </li>
+      <li>
+        <div class="icon">🗺️</div>
+        <div>
+          <b>One-tap directions</b>
+          Every location response includes a Google Maps link.
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- FAQ -->
+  <div class="card">
+    <h2>Frequently Asked Questions Stori can answer</h2>
+    <p style="font-size:13px;color:#999;margin-bottom:18px">These are the exact questions Stori is trained on. Try asking any of them in the chat.</p>
+
+    <div class="faq-section">
+
+      <div class="faq-group">
+        <div class="faq-group-title">General Storage</div>
+
+        <details>
+          <summary>What sizes of storage units do you offer?</summary>
+          <p>We offer a wide range of unit sizes — from compact 5×5 spaces for a few boxes or seasonal items to large 10×30 units that can hold the contents of an entire home. If you're unsure which size fits your needs, our staff can walk you through it in just a few minutes.</p>
+        </details>
+        <details>
+          <summary>How do I figure out which size storage unit is right for me?</summary>
+          <p>A simple way to estimate is to think by "room." A 5×10 usually fits one room's worth of belongings, while a 10×20 or 10×25 can hold several rooms or a full household. When in doubt, give us a call — our team helps customers choose the right size every day.</p>
+        </details>
+        <details>
+          <summary>What items am I not allowed to store?</summary>
+          <p>For safety reasons, we do not allow food, live animals, plants, flammables, propane tanks, car batteries, ammunition, drugs, explosives, or hazardous chemicals. When in doubt, ask our staff.</p>
+        </details>
+        <details>
+          <summary>Do you offer climate-controlled units?</summary>
+          <p>Yes. All Look Self Storage facilities offer climate-controlled storage, which helps protect items like furniture, electronics, photos, and documents from extreme temperatures and moisture.</p>
+        </details>
+        <details>
+          <summary>What's the difference between indoor and outdoor storage?</summary>
+          <p>Indoor units are located inside a climate-controlled building, ideal for sensitive items. Outdoor or "drive-up" units allow you to park right at the door for easy loading and unloading.</p>
+        </details>
+        <details>
+          <summary>Can I store a vehicle, RV, or boat?</summary>
+          <p>Yes. Our Lansing and South Lyon locations offer outdoor parking for vehicles, RVs, and boats. Highland offers indoor vehicle storage inside a traditional unit.</p>
+        </details>
+        <details>
+          <summary>Are leases month-to-month?</summary>
+          <p>Yes, all of our rentals are month-to-month for maximum flexibility.</p>
+        </details>
+        <details>
+          <summary>Can I move in the same day I rent a unit?</summary>
+          <p>Absolutely. You can move in the same day whether you rent online, in person, or over the phone.</p>
+        </details>
+        <details>
+          <summary>What should I bring when moving in?</summary>
+          <p>Please bring a government-issued ID and your preferred payment method. We'll handle the rest.</p>
+        </details>
+        <details>
+          <summary>Do you provide carts or dollies?</summary>
+          <p>Yes, all locations have heavy-duty carts available to help you move items more easily.</p>
+        </details>
+      </div>
+
+      <div class="faq-group">
+        <div class="faq-group-title">Rates, Billing &amp; Payments</div>
+
+        <details>
+          <summary>How much does a storage unit cost?</summary>
+          <p>Rates vary based on size, type, and location. You can get an instant quote by calling us or checking availability online.</p>
+        </details>
+        <details>
+          <summary>Do you offer move-in specials or discounts?</summary>
+          <p>Yes. Specials vary by location, and we also offer prepaid discounts and reduced rates for Military, First Responders, and School Employees with valid ID.</p>
+        </details>
+        <details>
+          <summary>Do I need to pay a deposit or administrative fee?</summary>
+          <p>There is a one-time $25 administrative fee at move-in. No security deposit required.</p>
+        </details>
+        <details>
+          <summary>What payment methods do you accept?</summary>
+          <p>We accept credit/debit cards, cash, checks, money orders, and ACH bank payments.</p>
+        </details>
+        <details>
+          <summary>Can I set up autopay?</summary>
+          <p>Yes — autopay is required for all tenants to help ensure on-time payments and avoid interruption.</p>
+        </details>
+        <details>
+          <summary>How do I make payments online?</summary>
+          <p>After your rental is completed, you can create an online account on our website to make payments, update your info, or change your card on file.</p>
+        </details>
+        <details>
+          <summary>What happens if I miss a payment?</summary>
+          <p>We'll send you text and email alerts. After five days of non-payment, gate access will be temporarily restricted.</p>
+        </details>
+      </div>
+
+      <div class="faq-group">
+        <div class="faq-group-title">Security &amp; Access</div>
+
+        <details>
+          <summary>How secure are your facilities?</summary>
+          <p>All locations feature 24/7 video surveillance, secure gated access, bright nighttime lighting, and personalized entry codes for tenants.</p>
+        </details>
+        <details>
+          <summary>Can I use my own lock?</summary>
+          <p>Yes, as long as it is not a cylinder lock. We strongly recommend disc locks, which are available for purchase on-site.</p>
+        </details>
+        <details>
+          <summary>Who can access my storage unit?</summary>
+          <p>Only you, unless you share your access code or designate an alternate contact on your account.</p>
+        </details>
+        <details>
+          <summary>What if I lose my key or forget my gate code?</summary>
+          <p>If you lose your unit key, we offer lock removal during office hours. For forgotten gate codes, please visit the office with valid ID.</p>
+        </details>
+      </div>
+
+      <div class="faq-group">
+        <div class="faq-group-title">Access Hours</div>
+
+        <details>
+          <summary>What are your access hours?</summary>
+          <p>Standard access hours are 6:00 a.m. to 10:00 p.m., 365 days a year.</p>
+        </details>
+        <details>
+          <summary>What are your office hours?</summary>
+          <p>Tuesday–Friday: 9:30 a.m.–6:00 p.m. &nbsp;|&nbsp; Saturday: 8:00 a.m.–4:30 p.m. &nbsp;|&nbsp; Sunday–Monday: Closed</p>
+        </details>
+        <details>
+          <summary>Do you offer 24-hour access?</summary>
+          <p>Yes. For an additional $10/month and a written request explaining the need.</p>
+        </details>
+        <details>
+          <summary>What if I need help after office hours?</summary>
+          <p>Call your facility. Our voicemail includes an after-hours emergency contact number.</p>
+        </details>
+      </div>
+
+      <div class="faq-group">
+        <div class="faq-group-title">Packing &amp; Storage Tips</div>
+
+        <details>
+          <summary>How should I pack items inside my unit?</summary>
+          <p>Place heavier items and sturdy boxes on the bottom, then stack lighter items on top. Plastic totes offer better protection than cardboard boxes.</p>
+        </details>
+        <details>
+          <summary>How do I protect furniture or electronics?</summary>
+          <p>Climate-controlled units are best. Wrap furniture in covers and protect electronics with plastic or bubble wrap to keep out dust and moisture.</p>
+        </details>
+        <details>
+          <summary>How do I avoid pests in storage?</summary>
+          <p>Use sealed totes, avoid storing food, wrap mattresses and furniture, and keep items off the floor. We also maintain routine pest control for added peace of mind.</p>
+        </details>
+      </div>
+
+      <div class="faq-group">
+        <div class="faq-group-title">Vehicle, Boat &amp; RV Storage</div>
+
+        <details>
+          <summary>Do you offer outdoor vehicle storage?</summary>
+          <p>Yes. Lansing and South Lyon offer outdoor spaces for vehicles, RVs, and boats.</p>
+        </details>
+        <details>
+          <summary>Is enclosed or covered storage available?</summary>
+          <p>Options vary by location. Call us and we'll help you find the best space for your vehicle.</p>
+        </details>
+      </div>
+
+      <div class="faq-group">
+        <div class="faq-group-title">Moving Out &amp; Account Changes</div>
+
+        <details>
+          <summary>Can I switch units if I need more or less space?</summary>
+          <p>Yes. Unit transfers are quick and simple — just contact the office.</p>
+        </details>
+        <details>
+          <summary>How do I move out?</summary>
+          <p>Give us a 10-day notice, empty and sweep your unit, remove your lock, and notify the office once you're done.</p>
+        </details>
+        <details>
+          <summary>Is there a minimum or maximum rental period?</summary>
+          <p>All rentals are month-to-month. Move-in specials may require a 3-month minimum stay.</p>
+        </details>
+        <details>
+          <summary>Do I need insurance?</summary>
+          <p>Yes. Xercor insurance is required for all rentals. Homeowners and renters insurance are not accepted.</p>
+        </details>
+      </div>
+
+      <div class="faq-group">
+        <div class="faq-group-title">Communication &amp; Support</div>
+
+        <details>
+          <summary>Is there on-site staff?</summary>
+          <p>Yes. Each facility has on-site staff during office hours.</p>
+        </details>
+        <details>
+          <summary>How do I contact my local facility?</summary>
+          <p>You can reach us by phone, email, text, or by visiting the office in person.</p>
+        </details>
+        <details>
+          <summary>How do I leave a review?</summary>
+          <p>Search your Look Self Storage location on Google and click "Write a Review." We appreciate your feedback!</p>
+        </details>
+      </div>
+
     </div>
-  </main>
+  </div>
 
-  <script
-    src="/static/chatbot-widget.js"
-    data-api-url="/chat"
-    data-title="Look Self Storage"
-    data-color="#cc0000"
-    data-header-color="#2a2a2a"
-  ></script>
+  <!-- RESERVATIONS ADMIN -->
+  <div class="card">
+    <h2>View reservations</h2>
+    <p style="font-size:14px;color:#555;margin-bottom:10px">All reservations are saved locally and accessible here (replace <b>YOUR-KEY</b> with your admin password):</p>
+    <a class="admin-link" href="/admin/reservations?key=changeme-before-deploy" target="_blank">/admin/reservations?key=YOUR-KEY</a>
+  </div>
+
+  <!-- EMBED -->
+  <div class="card">
+    <h2>Add to any webpage</h2>
+    <p style="font-size:14px;color:#555">Paste these two lines before <b>&lt;/body&gt;</b> on any page:</p>
+    <div class="embed-box"><span class="cm">&lt;!-- Stori chatbot --&gt;</span>
+&lt;script&gt;window.STORI_BASE_URL = "<span class="hl">https://your-server.com</span>";&lt;/script&gt;
+&lt;script src="<span class="hl">https://your-server.com</span>/static/chatbot-widget.js"&gt;&lt;/script&gt;</div>
+  </div>
+
+</main>
+
+<script src="/static/chatbot-widget.js"></script>
 </body>
 </html>

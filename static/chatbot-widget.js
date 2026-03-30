@@ -291,6 +291,13 @@
       margin-top: 10px; font-size: 11.5px; color: #aaa;
       border-top: 1px solid #f0f0f0; padding-top: 9px;
     }
+    .ls-complete-rental-btn {
+      display: block; margin-top: 10px;
+      background: ${ACCENT}; color: #fff; text-decoration: none;
+      text-align: center; padding: 9px 14px; border-radius: 6px;
+      font-size: 13px; font-weight: 600;
+    }
+    .ls-complete-rental-btn:hover { opacity: .88; }
 
     /* ── Location comparison card ── */
     .ls-location-card {
@@ -565,8 +572,9 @@
         <tr><td>Ref #</td><td>${meta.reservation_id}</td></tr>
       </table>
       <div class="ls-reservation-card-footer">
-        We'll contact you within 1 business day to confirm and arrange payment.
+        Check your email for a link to pay, sign your lease, and move in — same-day move-in available!
       </div>
+      <a href="https://www.lookselfstorage.com" target="_blank" rel="noopener noreferrer" class="ls-complete-rental-btn">Complete your rental online →</a>
     `;
     messagesEl.appendChild(card);
     messagesEl.scrollTop = messagesEl.scrollHeight;
@@ -577,7 +585,7 @@
   const OPEN_ENDED_CHIPS   = /^(something else|other)$/i;
   const SEE_WHAT_FITS_CHIP = /^see what fits/i;
   const ALL_GOOD_CHIP      = /^all good$/i;
-  const FEEDBACK_RATINGS   = ["⭐⭐⭐⭐⭐ Amazing", "⭐⭐⭐⭐ Good", "⭐⭐⭐ It was OK"];
+  const GOOGLE_REVIEW_URL  = "YOUR_GOOGLE_REVIEW_URL"; // ← Replace with your Google review link
 
   function showChips(options, onSelect) {
     removeQuickReplies();
@@ -597,22 +605,9 @@
         } else if (ALL_GOOD_CHIP.test(label)) {
           addBubble("user", label);
           setTimeout(() => {
-            addBubble("bot", "Glad I could help! Mind rating your experience today?");
-            showChips(FEEDBACK_RATINGS, () => {});
+            addBubble("bot", `Glad I could help! If you have a moment, we'd love a Google review — it means a lot to us. [Leave a review ⭐](${GOOGLE_REVIEW_URL})`);
+            setTimeout(() => resetChat(), 8000);
           }, 400);
-        } else if (FEEDBACK_RATINGS.includes(label)) {
-          addBubble("user", label);
-          fetch(BASE_URL + "/feedback", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ rating: label }),
-          });
-          const thanks = label.startsWith("⭐⭐⭐⭐⭐")
-            ? "That's amazing to hear — thank you! Good luck with your move!"
-            : label.startsWith("⭐⭐⭐⭐")
-            ? "Thanks for the feedback! Hope to see you at Look Self Storage soon."
-            : "Thanks for letting us know — we'll keep working to improve!";
-          setTimeout(() => { addBubble("bot", thanks); setTimeout(() => resetChat(), 4000); }, 400);
         } else {
           onSelect(label);
         }
