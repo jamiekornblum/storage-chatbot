@@ -736,7 +736,7 @@
   function showGreeting() {
     const text = "Hi! I'm Stori, your storage guide at Look Self Storage 👋\nWhat can I help you with today?";
     addBubble("bot", text);
-    displayLog.push({ role: "bot", text });
+    // Not saved to displayLog — greeting is always shown fresh, never replayed from session
     showMainChips();
   }
 
