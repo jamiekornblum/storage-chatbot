@@ -25,10 +25,9 @@
     "View pricing & available sizes",
     "Office hours & gate access",
     "Vehicle, RV & boat storage",
-    "Packing & moving supplies",
     "Billing & payment options",
     "Security & facility features",
-    "Moving out of my unit",
+    "Request a callback",
     "Something else",
   ];
 

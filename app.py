@@ -10,6 +10,7 @@ import smtplib
 import json
 import os
 import datetime
+import zoneinfo
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
@@ -260,6 +261,7 @@ LOCATIONS:
 1. Highland, MI
    - Address: 500 N Milford Rd, Highland, MI 48357
    - Google Maps: [Get directions](https://www.google.com/maps/search/?api=1&query=500+N+Milford+Rd+Highland+MI+48357)
+   - Reserve online: [View units & reserve](https://www.lookselfstorage.com/location/US/MI/Highland/look-highland-163734/)
    - Phone: (734) 627-6900
    - Email: office_highland@lookselfstorage.com
    - Office Hours: Tue–Fri 9:30 AM–6:00 PM, Sat 8:00 AM–4:30 PM, Sun–Mon Closed
@@ -270,6 +272,7 @@ LOCATIONS:
 2. Lansing, MI
    - Address: 936 Mall Dr E, Lansing, MI 48917
    - Google Maps: [Get directions](https://www.google.com/maps/search/?api=1&query=936+Mall+Dr+E+Lansing+MI+48917)
+   - Reserve online: [View units & reserve](https://www.lookselfstorage.com/location/US/MI/Lansing/look-lansing-163736/)
    - Phone: (517) 300-0376
    - Email: office_lansing@lookselfstorage.com
    - Office Hours: Tue–Fri 9:30 AM–6:00 PM, Sat 8:00 AM–4:30 PM, Sun–Mon Closed
@@ -280,6 +283,7 @@ LOCATIONS:
 3. South Lyon, MI
    - Address: 59070 Oasis Center Dr, South Lyon, MI 48178
    - Google Maps: [Get directions](https://www.google.com/maps/search/?api=1&query=59070+Oasis+Center+Dr+South+Lyon+MI+48178)
+   - Reserve online: [View units & reserve](https://www.lookselfstorage.com/location/USA/MI/South-Lyon/look-163735/)
    - Phone: (248) 907-7867
    - Email: office_southlyon@lookselfstorage.com
    - Office Hours: Tue–Fri 9:30 AM–6:00 PM, Sat 8:00 AM–4:30 PM, Sun–Mon Closed
@@ -428,21 +432,27 @@ The tool returns a pre-formatted list. Present the options directly. Do not rest
 - If ALL results are marked "📞 Call to reserve": skip asking about climate control or drive-up entirely — just give them the office number and tell them the team can walk them through options. Do not ask follow-up preference questions when they have to call anyway.
 - If some results are "✓ Reserve online": only then ask about climate control or drive-up if those variants exist. If the customer already stated a preference, pass that as a filter and skip asking.
 
-STEP 7 — Help them reserve or redirect.
-If they want a unit marked "✓ Reserve online":
-  a. Ask "When do you need it by?" (move-in date) — one question, wait for answer.
-  b. Ask for their name — one question, wait for answer.
-  c. Ask for their email — one question, wait for answer.
-  d. Ask if they need any packing supplies — boxes, tape, bubble wrap, locks are available on-site. One short sentence. CHIPS: Yes, tell me more | No thanks
-     - If yes: let them know supplies are available and the team can go over what's in stock. Note it in the reservation.
-     - If no: move on.
-  e. Then call create_reservation with all collected info.
-  f. After the reservation is created: confirm their name and unit size, then let them know they'll receive a confirmation email with a link to complete their rental online — they can pay, sign their lease, and move in all through that link. Mention that same-day move-in is available. Do not say staff will call them.
-If the unit is marked "📞 Call to reserve": give them the office phone number and end there. Do not ask about climate control, drive-up, or any other preferences — the office team will handle that on the call.
+STEP 7 — Send them to reserve online.
+When the customer is ready to reserve, give them the direct link for their chosen location. Use the "Reserve online" link from the location details above. Present it as a markdown link, e.g. [Reserve at South Lyon](URL).
+Tell them they can view live availability, pick their unit, and complete the rental entirely online — same-day move-in is available.
+Do NOT collect their name, email, or any other info — just send them to the link.
 
 TOOLS YOU HAVE:
 1. get_availability — call ONLY after you know both the location and the recommended size. Always pass the size filter. Returns a ready-to-display list of options.
 2. create_reservation — call after collecting name, email, and unit size through conversation. Gather info naturally — one question at a time, not a form dump.
+
+BUSINESS HOURS AWARENESS:
+The very first line of this prompt contains the current Michigan time and office/gate status.
+- If the office is OPEN: respond normally.
+- If the office is CLOSED: acknowledge it naturally when relevant (e.g. "The office is closed right now, but..."). Always remind them gate access is available 6 AM–10 PM and they can reserve online anytime. Offer a callback for anything that needs staff.
+- If the gate is CLOSED (after 10 PM): let them know they can't access units right now but can plan ahead or call in the morning.
+- Don't volunteer the time status unless it's relevant to what the customer is asking.
+
+CALLBACK REQUESTS:
+If a customer wants to speak with someone, needs help with something you can't resolve, or asks to be called — offer a callback.
+- Ask for their name (one question), then their phone number (one question).
+- Then call request_callback with the info.
+- After the tool confirms: tell them the team will give them a call during office hours (Tue–Fri 9:30 AM–6 PM, Sat 8 AM–4:30 PM).
 
 RESPONSE RULES:
 - Spelling tolerance: if a customer misspells a location name or any storage term, interpret what they most likely mean and respond naturally without correcting them unless it causes genuine confusion. Never say "I think you meant…" — just answer as if they spelled it correctly.
@@ -454,7 +464,7 @@ RESPONSE RULES:
 - Never make up prices or availability — always call get_availability first.
 - Do NOT include phone numbers or emails unless you cannot resolve the issue — contact info is a last resort.
 - For anything needing staff involvement, say "Let me have someone from our team follow up on that for you" and provide the location's phone number.
-- After creating a reservation, confirm name and unit size in one short message, then tell them to check their email for a link to complete their rental online (pay, sign lease, move in). Mention same-day move-in is available.
+- When a customer wants to reserve, always provide the direct link for their chosen location. Never collect their name, email, or move-in date — send them to the website to complete it.
 - After completing any task or fully answering a question, end with: "Is that all for today? Have a great day! 😊" and use: CHIPS: Yes, one more thing | Please Leave a Google Review
 - If the customer clicks "Leave a Google Review" or "Yes, one more thing", the chat handles it automatically — you do NOT need to respond to those chips.
 
@@ -471,12 +481,12 @@ Rules:
 - If no location has been selected yet, keep chips general (do not mention climate or drive-up).
 
 Specific chip sets to use:
-- ALWAYS after your opening message and after completing any topic: CHIPS: I'd like to rent a unit | View pricing & available sizes | Office hours & gate access | Vehicle, RV & boat storage | Packing & moving supplies | Billing & payment options | Security & facility features | Moving out of my unit | Something else
+- ALWAYS after your opening message and after completing any topic: CHIPS: I'd like to rent a unit | View pricing & available sizes | Office hours & gate access | Vehicle, RV & boat storage | Billing & payment options | Security & facility features | Request a callback | Something else
 - ANY time you ask which location — regardless of topic (moving out, hours, billing, security, directions, packing supplies, anything) — ALWAYS use: CHIPS: Highland | Lansing | South Lyon | Not sure yet. No exceptions.
 - When asking what they're storing: CHIPS: Furniture | Appliances | Vehicle / Boat / RV | Business inventory | Other
 - If they say furniture or home items, ask how many rooms total: CHIPS: 1–2 rooms | 3–4 rooms | 5–6 rooms | 7+ rooms
 - When recommending a size: CHIPS: That works | See what fits | Need smaller | Need larger
-- After showing pricing (only include climate/drive-up chips if that feature is available at the chosen location): CHIPS: Reserve this unit | Different size | Other
+- After showing pricing (only include climate/drive-up chips if that feature is available at the chosen location): CHIPS: Reserve online | Different size | Other
 - After answering any question or completing any task: CHIPS: Yes, one more thing | All good
 - After a reservation is created: CHIPS: Yes, one more thing | All good
 
@@ -566,6 +576,15 @@ def init_db():
             CREATE TABLE IF NOT EXISTS feedback (
                 id         INTEGER PRIMARY KEY AUTOINCREMENT,
                 rating     TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS callbacks (
+                id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                name       TEXT NOT NULL,
+                phone      TEXT NOT NULL,
+                notes      TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
@@ -692,6 +711,48 @@ scheduler.add_job(send_follow_up_emails, "interval", hours=12)
 scheduler.start()
 
 
+def notify_callback_request(name, phone, notes):
+    """Email the owner when a customer requests a callback."""
+    send_email(
+        to=NOTIFY_EMAIL,
+        subject=f"📞 Callback request from {name}",
+        html_body=f"""
+        <div style="font-family:sans-serif;max-width:500px">
+          <h2 style="color:#cc0000">New Callback Request</h2>
+          <p><b>Name:</b> {name}</p>
+          <p><b>Phone:</b> {phone}</p>
+          {'<p><b>Notes:</b> ' + notes + '</p>' if notes else ''}
+          <p style="color:#888;font-size:12px;margin-top:24px">Sent by Stori chatbot</p>
+        </div>"""
+    )
+
+
+def build_system_prompt():
+    """Return BUSINESS_INFO prefixed with the current Michigan date/time and office status."""
+    tz  = zoneinfo.ZoneInfo("America/Detroit")
+    now = datetime.datetime.now(tz)
+    day = now.strftime("%A")
+    time_str = now.strftime("%I:%M %p")
+    t = now.hour * 60 + now.minute
+    wd = now.weekday()  # 0=Mon … 6=Sun
+
+    if wd in (1, 2, 3, 4):          # Tue–Fri
+        office_open = (9 * 60 + 30) <= t < (18 * 60)
+    elif wd == 5:                    # Saturday
+        office_open = (8 * 60) <= t < (16 * 60 + 30)
+    else:                            # Sun / Mon
+        office_open = False
+
+    gate_open = (6 * 60) <= t < (22 * 60)
+
+    status_line = (
+        f"[CURRENT TIME: {day}, {time_str} Eastern — "
+        f"Office: {'OPEN' if office_open else 'CLOSED'} | "
+        f"Gate access: {'OPEN' if gate_open else 'CLOSED'}]\n\n"
+    )
+    return status_line + BUSINESS_INFO
+
+
 # ---------------------------------------------------------------
 # CLAUDE TOOLS
 # ---------------------------------------------------------------
@@ -747,6 +808,22 @@ TOOLS = [
                 "notes":        {"type": "string", "description": "Special requests or notes (optional)"}
             },
             "required": ["name", "email", "unit_size"]
+        }
+    },
+    {
+        "name": "request_callback",
+        "description": (
+            "Save a callback request when a customer wants to be called by the Look Self Storage team. "
+            "Collect their name and phone number first."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "name":  {"type": "string", "description": "Customer's name"},
+                "phone": {"type": "string", "description": "Customer's phone number"},
+                "notes": {"type": "string", "description": "What they need help with (optional)"}
+            },
+            "required": ["name", "phone"]
         }
     }
 ]
@@ -884,6 +961,29 @@ def execute_tool(name, inputs):
             "next_steps": "Customer will receive a confirmation email with a link to complete their rental online — pay, sign lease, and move in. Same-day move-in is available.",
         }
 
+    if name == "request_callback":
+        cb_name  = str(inputs.get("name",  "") or "").strip()
+        cb_phone = str(inputs.get("phone", "") or "").strip()
+        cb_notes = str(inputs.get("notes", "") or "").strip()
+
+        if not cb_name or not cb_phone:
+            return {"success": False, "error": "Name and phone are required."}
+
+        with sqlite3.connect(DB_PATH) as conn:
+            conn.execute(
+                "INSERT INTO callbacks (name, phone, notes) VALUES (?, ?, ?)",
+                (cb_name, cb_phone, cb_notes)
+            )
+            conn.commit()
+
+        notify_callback_request(cb_name, cb_phone, cb_notes)
+        print(f"[callback] {cb_name} — {cb_phone}")
+
+        return {
+            "success": True,
+            "message": f"Callback request saved for {cb_name}. The team will call {cb_phone} during office hours."
+        }
+
     return {"error": f"Unknown tool: {name}"}
 
 
@@ -936,7 +1036,7 @@ def chat():
             response = client.messages.create(
                 model="claude-haiku-4-5-20251001",
                 max_tokens=1024,
-                system=BUSINESS_INFO,
+                system=build_system_prompt(),
                 tools=TOOLS,
                 messages=current_messages,
             )
@@ -999,7 +1099,7 @@ def chat_stream():
                 with client.messages.stream(
                     model="claude-haiku-4-5-20251001",
                     max_tokens=1024,
-                    system=BUSINESS_INFO,
+                    system=build_system_prompt(),
                     tools=TOOLS,
                     messages=current_messages,
                 ) as stream:
