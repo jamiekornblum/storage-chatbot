@@ -439,7 +439,6 @@ Do NOT collect their name, email, or any other info — just send them to the li
 
 TOOLS YOU HAVE:
 1. get_availability — call ONLY after you know both the location and the recommended size. Always pass the size filter. Returns a ready-to-display list of options.
-2. create_reservation — call after collecting name, email, and unit size through conversation. Gather info naturally — one question at a time, not a form dump.
 
 BUSINESS HOURS AWARENESS:
 The very first line of this prompt contains the current Michigan time and office/gate status.
@@ -449,10 +448,7 @@ The very first line of this prompt contains the current Michigan time and office
 - Don't volunteer the time status unless it's relevant to what the customer is asking.
 
 CALLBACK REQUESTS:
-If a customer wants to speak with someone, needs help with something you can't resolve, or asks to be called — offer a callback.
-- Ask for their name (one question), then their phone number (one question).
-- Then call request_callback with the info.
-- After the tool confirms: tell them the team will give them a call during office hours (Tue–Fri 9:30 AM–6 PM, Sat 8 AM–4:30 PM).
+If a customer wants to speak with someone, needs help with something you can't resolve, or asks to be called — suggest the "Request a callback" button. The chat widget handles the callback form automatically — do NOT ask for their name or phone yourself.
 
 RESPONSE RULES:
 - Spelling tolerance: if a customer misspells a location name or any storage term, interpret what they most likely mean and respond naturally without correcting them unless it causes genuine confusion. Never say "I think you meant…" — just answer as if they spelled it correctly.
@@ -711,16 +707,26 @@ scheduler.add_job(send_follow_up_emails, "interval", hours=12)
 scheduler.start()
 
 
-def notify_callback_request(name, phone, notes):
-    """Email the owner when a customer requests a callback."""
+LOCATION_EMAILS = {
+    "highland":   "office_highland@lookselfstorage.com",
+    "lansing":    "office_lansing@lookselfstorage.com",
+    "south_lyon": "office_southlyon@lookselfstorage.com",
+}
+
+def notify_callback_request(name, phone, location, notes):
+    """Email the correct location office when a customer requests a callback."""
+    loc_key   = (location or "").lower().replace(" ", "_")
+    to_email  = LOCATION_EMAILS.get(loc_key, NOTIFY_EMAIL)
+    loc_label = {"highland": "Highland", "lansing": "Lansing", "south_lyon": "South Lyon"}.get(loc_key, location or "Unknown")
     send_email(
-        to=NOTIFY_EMAIL,
+        to=to_email,
         subject=f"📞 Callback request from {name}",
         html_body=f"""
         <div style="font-family:sans-serif;max-width:500px">
-          <h2 style="color:#cc0000">New Callback Request</h2>
+          <h2 style="color:#cc0000">New Callback Request — {loc_label}</h2>
           <p><b>Name:</b> {name}</p>
           <p><b>Phone:</b> {phone}</p>
+          <p><b>Location:</b> {loc_label}</p>
           {'<p><b>Notes:</b> ' + notes + '</p>' if notes else ''}
           <p style="color:#888;font-size:12px;margin-top:24px">Sent by Stori chatbot</p>
         </div>"""
@@ -788,42 +794,6 @@ TOOLS = [
                 }
             },
             "required": ["location"]
-        }
-    },
-    {
-        "name": "create_reservation",
-        "description": (
-            "Save a reservation for a customer who wants to rent a unit. "
-            "Collect their name, email, and desired unit size through conversation first. "
-            "Phone and move-in date are helpful but not required."
-        ),
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "name":         {"type": "string", "description": "Customer's full name"},
-                "email":        {"type": "string", "description": "Customer's email address"},
-                "phone":        {"type": "string", "description": "Customer's phone number (optional)"},
-                "unit_size":    {"type": "string", "description": "Desired unit size, e.g. '10x10'"},
-                "move_in_date": {"type": "string", "description": "Desired move-in date (optional)"},
-                "notes":        {"type": "string", "description": "Special requests or notes (optional)"}
-            },
-            "required": ["name", "email", "unit_size"]
-        }
-    },
-    {
-        "name": "request_callback",
-        "description": (
-            "Save a callback request when a customer wants to be called by the Look Self Storage team. "
-            "Collect their name and phone number first."
-        ),
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "name":  {"type": "string", "description": "Customer's name"},
-                "phone": {"type": "string", "description": "Customer's phone number"},
-                "notes": {"type": "string", "description": "What they need help with (optional)"}
-            },
-            "required": ["name", "phone"]
         }
     }
 ]
@@ -976,7 +946,7 @@ def execute_tool(name, inputs):
             )
             conn.commit()
 
-        notify_callback_request(cb_name, cb_phone, cb_notes)
+        notify_callback_request(cb_name, cb_phone, "", cb_notes)
         print(f"[callback] {cb_name} — {cb_phone}")
 
         return {
@@ -1157,20 +1127,21 @@ def chat_stream():
 @app.route("/callback", methods=["POST"])
 def save_callback():
     """Save a callback request from the chat widget."""
-    data  = request.get_json(silent=True) or {}
-    name  = (data.get("name")  or "").strip()
-    phone = (data.get("phone") or "").strip()
-    notes = (data.get("notes") or "").strip()
+    data     = request.get_json(silent=True) or {}
+    name     = (data.get("name")     or "").strip()
+    phone    = (data.get("phone")    or "").strip()
+    location = (data.get("location") or "").strip()
+    notes    = (data.get("notes")    or "").strip()
     if not name or not phone:
         return jsonify({"error": "name and phone required"}), 400
     with sqlite3.connect(DB_PATH) as conn:
         conn.execute(
             "INSERT INTO callbacks (name, phone, notes) VALUES (?, ?, ?)",
-            (name, phone, notes)
+            (name, phone, f"Location: {location}. {notes}".strip(". "))
         )
         conn.commit()
-    notify_callback_request(name, phone, notes)
-    print(f"[callback] {name} — {phone}")
+    notify_callback_request(name, phone, location, notes)
+    print(f"[callback] {name} — {phone} — {location}")
     return jsonify({"success": True})
 
 

@@ -609,8 +609,9 @@
   // ── Quick reply chip renderer ────────────────────────────────────────────────
   const OPEN_ENDED_CHIPS   = /^(something else|other)$/i;
   const SEE_WHAT_FITS_CHIP = /^see what fits/i;
-  const GOOGLE_REVIEW_CHIP = /^please leave a google review$/i;
-  const CALLBACK_CHIP      = /^request a callback$/i;
+  const GOOGLE_REVIEW_CHIP  = /^please leave a google review$/i;
+  const CALLBACK_CHIP       = /^request a callback$/i;
+  const YES_MORE_CHIP       = /^yes, one more thing$/i;
   const GOOGLE_REVIEW_URL  = "https://search.google.com/local/writereview?placeid=ChIJV4YgHEBfI4gRoATFFK2mfoU";
 
   function showChips(options, onSelect) {
@@ -628,10 +629,13 @@
           input.focus();
         } else if (SEE_WHAT_FITS_CHIP.test(label)) {
           if (currentRecommendedSize) renderSizeVisualization(currentRecommendedSize);
+        } else if (YES_MORE_CHIP.test(label)) {
+          addBubble("user", label);
+          setTimeout(() => showMainChips(), 300);
         } else if (CALLBACK_CHIP.test(label)) {
           addBubble("user", label);
           setTimeout(() => {
-            addBubble("bot", "Sure! Leave your details and we'll give you a call during office hours.");
+            addBubble("bot", "Sure! Leave your details and we'll have the right office give you a call.");
             const card = document.createElement("div");
             card.className = "ls-callback-card";
             card.innerHTML = `
@@ -644,25 +648,40 @@
                 <label>Phone Number</label>
                 <input type="tel" id="ls-cb-phone" placeholder="(555) 123-4567" />
               </div>
+              <div class="ls-callback-field">
+                <label>Which Location?</label>
+                <select id="ls-cb-location" style="border:1.5px solid #e0e0e0;border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;outline:none;">
+                  <option value="">Select a location…</option>
+                  <option value="highland">Highland</option>
+                  <option value="lansing">Lansing</option>
+                  <option value="south_lyon">South Lyon</option>
+                </select>
+              </div>
+              <div class="ls-callback-field">
+                <label>What can we help you with?</label>
+                <input type="text" id="ls-cb-notes" placeholder="e.g. pricing, unit availability, moving out…" />
+              </div>
               <button class="ls-callback-submit" id="ls-cb-submit">Submit →</button>
             `;
             messagesEl.appendChild(card);
             messagesEl.scrollTop = messagesEl.scrollHeight;
             document.getElementById("ls-cb-submit").addEventListener("click", () => {
-              const name  = document.getElementById("ls-cb-name").value.trim();
-              const phone = document.getElementById("ls-cb-phone").value.trim();
-              if (!name || !phone) {
-                document.getElementById("ls-cb-name").style.borderColor  = name  ? "" : "#cc0000";
-                document.getElementById("ls-cb-phone").style.borderColor = phone ? "" : "#cc0000";
-                return;
-              }
+              const name     = document.getElementById("ls-cb-name").value.trim();
+              const phone    = document.getElementById("ls-cb-phone").value.trim();
+              const location = document.getElementById("ls-cb-location").value;
+              const notes    = document.getElementById("ls-cb-notes").value.trim();
+              document.getElementById("ls-cb-name").style.borderColor     = name     ? "" : "#cc0000";
+              document.getElementById("ls-cb-phone").style.borderColor    = phone    ? "" : "#cc0000";
+              document.getElementById("ls-cb-location").style.borderColor = location ? "" : "#cc0000";
+              if (!name || !phone || !location) return;
               card.remove();
               fetch(BASE_URL + "/callback", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, phone }),
+                body: JSON.stringify({ name, phone, location, notes }),
               });
-              addBubble("bot", `Got it, ${name}! Someone from our team will call ${phone} during office hours. Is there anything else I can help you with?`);
+              const locLabel = { highland: "Highland", lansing: "Lansing", south_lyon: "South Lyon" }[location];
+              addBubble("bot", `Perfect, ${name}! The ${locLabel} team will call you at ${phone} during office hours — Tue–Fri 9:30 AM–6 PM or Sat 8 AM–4:30 PM.${notes ? " We'll make sure they know you're asking about: " + notes + "." : ""}`);
               showMainChips();
             });
           }, 400);
@@ -943,8 +962,7 @@
       }
       busy = false;
       sendBtn.disabled = false;
-      // Reset after a short delay so the customer sees the confirmation
-      setTimeout(() => resetChat(), 6000);
+      showMainChips();
       return;
     }
 
