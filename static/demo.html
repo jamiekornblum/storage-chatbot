@@ -536,6 +536,58 @@
 &lt;script src="<span class="hl">https://your-server.com</span>/static/chatbot-widget.js"&gt;&lt;/script&gt;</div>
   </div>
 
+  <!-- GTM -->
+  <div class="card">
+    <h2>Add via Google Tag Manager</h2>
+    <p style="font-size:14px;color:#555;margin-bottom:16px">If your website uses Google Tag Manager, follow these steps instead of editing any code:</p>
+
+    <div class="setup-step">
+      <div class="setup-num">1</div>
+      <div>
+        <b>Open Google Tag Manager</b>
+        <p>Go to <b>tagmanager.google.com</b> and open your website's container.</p>
+      </div>
+    </div>
+    <div class="setup-step">
+      <div class="setup-num">2</div>
+      <div>
+        <b>Create a new tag</b>
+        <p>Click <b>Tags → New</b>. Give it a name like <b>Stori Chatbot</b>.</p>
+      </div>
+    </div>
+    <div class="setup-step">
+      <div class="setup-num">3</div>
+      <div>
+        <b>Choose "Custom HTML" as the tag type</b>
+        <p>Click <b>Tag Configuration</b> → scroll down to <b>Custom</b> → select <b>Custom HTML</b>.</p>
+      </div>
+    </div>
+    <div class="setup-step">
+      <div class="setup-num">4</div>
+      <div>
+        <b>Paste the embed code</b>
+        <p>Copy both lines below and paste them into the HTML box:</p>
+        <div class="embed-box" style="margin-top:10px"><span class="cm">&lt;!-- Stori chatbot --&gt;</span>
+&lt;script&gt;window.STORI_BASE_URL = "<span class="hl">https://your-server.com</span>";&lt;/script&gt;
+&lt;script src="<span class="hl">https://your-server.com</span>/static/chatbot-widget.js"&gt;&lt;/script&gt;</div>
+      </div>
+    </div>
+    <div class="setup-step">
+      <div class="setup-num">5</div>
+      <div>
+        <b>Set the trigger to "All Pages"</b>
+        <p>Click <b>Triggering</b> → select <b>All Pages</b>. This makes the chatbot appear on every page of the site.</p>
+      </div>
+    </div>
+    <div class="setup-step">
+      <div class="setup-num">6</div>
+      <div>
+        <b>Save and publish</b>
+        <p>Click <b>Save</b>, then click <b>Submit</b> in the top right and publish the container. The chatbot will go live within a few minutes.</p>
+      </div>
+    </div>
+  </div>
+
 </main>
 
 <script src="/static/chatbot-widget.js"></script>
