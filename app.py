@@ -1154,6 +1154,26 @@ def chat_stream():
     )
 
 
+@app.route("/callback", methods=["POST"])
+def save_callback():
+    """Save a callback request from the chat widget."""
+    data  = request.get_json(silent=True) or {}
+    name  = (data.get("name")  or "").strip()
+    phone = (data.get("phone") or "").strip()
+    notes = (data.get("notes") or "").strip()
+    if not name or not phone:
+        return jsonify({"error": "name and phone required"}), 400
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute(
+            "INSERT INTO callbacks (name, phone, notes) VALUES (?, ?, ?)",
+            (name, phone, notes)
+        )
+        conn.commit()
+    notify_callback_request(name, phone, notes)
+    print(f"[callback] {name} — {phone}")
+    return jsonify({"success": True})
+
+
 @app.route("/feedback", methods=["POST"])
 def save_feedback():
     """Save a star rating from the chat widget."""

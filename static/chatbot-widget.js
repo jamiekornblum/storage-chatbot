@@ -298,6 +298,32 @@
     }
     .ls-complete-rental-btn:hover { opacity: .88; }
 
+    /* ── Callback form card ── */
+    .ls-callback-card {
+      align-self: flex-start; width: 88%;
+      background: #fff; border: 1.5px solid ${ACCENT};
+      border-radius: 16px; border-bottom-left-radius: 4px;
+      padding: 14px 16px; box-shadow: 0 2px 8px rgba(0,0,0,.07);
+    }
+    .ls-callback-card-title {
+      font-weight: 700; font-size: 14px; color: ${ACCENT}; margin-bottom: 12px;
+    }
+    .ls-callback-field {
+      display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px;
+    }
+    .ls-callback-field label { font-size: 11px; color: #999; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; }
+    .ls-callback-field input {
+      border: 1.5px solid #e0e0e0; border-radius: 8px; padding: 8px 10px;
+      font-size: 13px; font-family: inherit; outline: none;
+    }
+    .ls-callback-field input:focus { border-color: ${ACCENT}; }
+    .ls-callback-submit {
+      width: 100%; background: ${ACCENT}; color: #fff; border: none;
+      border-radius: 8px; padding: 9px; font-size: 13px; font-weight: 600;
+      font-family: inherit; cursor: pointer; margin-top: 4px;
+    }
+    .ls-callback-submit:hover { opacity: .88; }
+
     /* ── Location comparison card ── */
     .ls-location-card {
       align-self: flex-start; width: 100%;
@@ -584,6 +610,7 @@
   const OPEN_ENDED_CHIPS   = /^(something else|other)$/i;
   const SEE_WHAT_FITS_CHIP = /^see what fits/i;
   const GOOGLE_REVIEW_CHIP = /^please leave a google review$/i;
+  const CALLBACK_CHIP      = /^request a callback$/i;
   const GOOGLE_REVIEW_URL  = "https://search.google.com/local/writereview?placeid=ChIJV4YgHEBfI4gRoATFFK2mfoU";
 
   function showChips(options, onSelect) {
@@ -601,6 +628,44 @@
           input.focus();
         } else if (SEE_WHAT_FITS_CHIP.test(label)) {
           if (currentRecommendedSize) renderSizeVisualization(currentRecommendedSize);
+        } else if (CALLBACK_CHIP.test(label)) {
+          addBubble("user", label);
+          setTimeout(() => {
+            addBubble("bot", "Sure! Leave your details and we'll give you a call during office hours.");
+            const card = document.createElement("div");
+            card.className = "ls-callback-card";
+            card.innerHTML = `
+              <div class="ls-callback-card-title">📞 Request a Callback</div>
+              <div class="ls-callback-field">
+                <label>Your Name</label>
+                <input type="text" id="ls-cb-name" placeholder="Jane Smith" />
+              </div>
+              <div class="ls-callback-field">
+                <label>Phone Number</label>
+                <input type="tel" id="ls-cb-phone" placeholder="(555) 123-4567" />
+              </div>
+              <button class="ls-callback-submit" id="ls-cb-submit">Submit →</button>
+            `;
+            messagesEl.appendChild(card);
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+            document.getElementById("ls-cb-submit").addEventListener("click", () => {
+              const name  = document.getElementById("ls-cb-name").value.trim();
+              const phone = document.getElementById("ls-cb-phone").value.trim();
+              if (!name || !phone) {
+                document.getElementById("ls-cb-name").style.borderColor  = name  ? "" : "#cc0000";
+                document.getElementById("ls-cb-phone").style.borderColor = phone ? "" : "#cc0000";
+                return;
+              }
+              card.remove();
+              fetch(BASE_URL + "/callback", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, phone }),
+              });
+              addBubble("bot", `Got it, ${name}! Someone from our team will call ${phone} during office hours. Is there anything else I can help you with?`);
+              showMainChips();
+            });
+          }, 400);
         } else if (GOOGLE_REVIEW_CHIP.test(label)) {
           addBubble("user", label);
           window.open(GOOGLE_REVIEW_URL, "_blank", "noopener,noreferrer");
