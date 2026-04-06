@@ -14,7 +14,7 @@
 (function () {
   // ── Config ───────────────────────────────────────────────────────────────────
   const scriptTag   = document.currentScript || document.querySelector("script[data-api-url]");
-  const API_URL     = scriptTag?.getAttribute("data-api-url")     || "/chat";
+  const API_URL     = scriptTag?.getAttribute("data-api-url")     || window.STORI_BASE_URL + "/chat";
   const STREAM_URL  = scriptTag?.getAttribute("data-stream-url")  || (API_URL + "/stream");
   const ACCENT      = scriptTag?.getAttribute("data-color")       || "#cc0000";  // brand red
   const HEADER_BG   = scriptTag?.getAttribute("data-header-color")|| "#2a2a2a";  // charcoal
